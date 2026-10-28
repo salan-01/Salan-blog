@@ -1,0 +1,296 @@
+---
+import { Icon } from "astro-icon/components";
+
+import { LinkPresets } from "../../../constants/link-presets";
+import I18nKey from "../../../i18n/i18nKey";
+import { i18n } from "../../../i18n/translation";
+import type { LinkPreset, NavBarLink } from "../../../types/config";
+import { url } from "../../../utils/url-utils";
+import type { NavMenuPanelProps, ProcessedNavBarLink } from "./types";
+
+const navTitleMap: Record<string, string> = {
+	Links: I18nKey.navLinks,
+	My: I18nKey.navMy,
+	About: I18nKey.navAbout,
+	Others: I18nKey.navOthers,
+	Anime: I18nKey.anime,
+	Diary: I18nKey.diary,
+	Gallery: I18nKey.albums,
+	Devices: I18nKey.devices,
+	Projects: I18nKey.projects,
+	Skills: I18nKey.skills,
+	Timeline: I18nKey.timeline,
+	Friends: I18nKey.friends,
+};
+
+const getLocalizedName = (name: string): string => {
+	const keyValue = navTitleMap[name];
+	if (keyValue) {
+		return i18n(keyValue as I18nKey);
+	}
+	return name;
+};
+
+const processedLinks: ProcessedNavBarLink[] = (
+	Astro.props as NavMenuPanelProps
+).links.map(
+	(link: NavBarLink): ProcessedNavBarLink => ({
+		...link,
+		children: link.children?.map(
+			(child: NavBarLink | LinkPreset): ProcessedNavBarLink => {
+				if (typeof child === "number") {
+					return LinkPresets[child] as ProcessedNavBarLink;
+				}
+				return child as ProcessedNavBarLink;
+			},
+		),
+	}),
+);
+---
+
+<div
+	id="nav-menu-panel"
+	class:list={[
+		"float-panel float-panel-closed absolute transition-all fixed right-4 px-2 py-2 max-h-[80vh] overflow-y-auto",
+	]}
+>
+	<div class="cafe-sheet-handle" aria-hidden="true"></div>
+	<div class="cafe-menu-heading"><span>Inside the café</span><button type="button" class="cafe-menu-close" data-close-nav aria-label="Close menu"><Icon name="material-symbols:close-rounded" /></button></div>
+	{
+		processedLinks.map((link) => (
+			<div class="mobile-menu-item">
+				{link.children && link.children.length > 0 ? (
+					<div class="mobile-dropdown" data-mobile-dropdown>
+						<button
+							class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-4 w-full text-left
+                            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition"
+							data-mobile-dropdown-trigger
+							aria-expanded="false"
+						>
+							<div class="flex items-center transition text-black/75 dark:text-white/75 font-bold">
+								{link.icon && (
+									<Icon
+										name={link.icon}
+										class="text-[1.1rem] mr-2"
+									/>
+								)}
+								{getLocalizedName(link.name)}
+							</div>
+							<Icon
+								name="material-symbols:keyboard-arrow-down-rounded"
+								class="transition text-[1.25rem] text-[var(--primary)] mobile-dropdown-arrow duration-200"
+							/>
+						</button>
+						<div class="mobile-submenu" data-mobile-submenu inert>
+							{link.children.map((child) => (
+								<a
+									href={
+										child.external
+											? child.url
+											: url(child.url)
+									}
+									class="group flex justify-between items-center py-2 pl-6 pr-1 rounded-lg gap-4
+                                   hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition"
+									target={child.external ? "_blank" : null}
+								>
+									<div class="flex items-center transition text-black/60 dark:text-white/60 font-medium">
+										{child.icon && (
+											<Icon
+												name={child.icon}
+												class="text-[1.1rem] mr-2"
+											/>
+										)}
+										{getLocalizedName(child.name)}
+									</div>
+									{child.external && (
+										<Icon
+											name="fa7-solid:arrow-up-right-from-square"
+											class="transition text-[0.75rem] text-black/25 dark:text-white/25 -translate-x-1"
+										/>
+									)}
+								</a>
+							))}
+						</div>
+					</div>
+				) : (
+					<a
+						href={link.external ? link.url : url(link.url)}
+						class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-4
+                    hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+                "
+						target={link.external ? "_blank" : null}
+					>
+						<div class="flex items-center transition text-black/75 dark:text-white/75 font-bold">
+							{link.icon && (
+								<Icon
+									name={link.icon}
+									class="text-[1.1rem] mr-2"
+								/>
+							)}
+							{getLocalizedName(link.name)}
+						</div>
+						{!link.external && (
+							<Icon
+								name="material-symbols:chevron-right-rounded"
+								class="transition text-[1.25rem] text-[var(--primary)]"
+							/>
+						)}
+						{link.external && (
+							<Icon
+								name="fa7-solid:arrow-up-right-from-square"
+								class="transition text-[0.75rem] text-black/25 dark:text-white/25 -translate-x-1"
+							/>
+						)}
+					</a>
+				)}
+			</div>
+		))
+	}
+	<div class="cafe-mobile-tools">
+		<button type="button" data-mobile-tool="theme"><Icon name="material-symbols:light-mode-outline-rounded" /><span>Light / dark</span></button>
+		<button type="button" data-mobile-tool="appearance"><Icon name="material-symbols:palette-outline" /><span>Appearance</span></button>
+	</div>
+</div>
+
+<style>
+	@reference "tailwindcss";
+
+	.mobile-submenu {
+		@apply max-h-0 overflow-hidden transition-all duration-300 ease-in-out;
+	}
+
+	.mobile-dropdown[data-expanded="true"] .mobile-submenu {
+		@apply max-h-96;
+	}
+
+	.mobile-dropdown[data-expanded="true"] .mobile-dropdown-arrow {
+		@apply rotate-180;
+	}
+</style>
+
+<script>
+	import { panelManager } from "../../../utils/panel-manager";
+	const panel = document.getElementById("nav-menu-panel");
+	const toggle = document.getElementById("nav-menu-switch");
+	const mobile = matchMedia("(width < 768px)");
+	const anchor = document.createComment("Mobile menu portal");
+	panel?.before(anchor);
+	const backdrop = document.createElement("div");
+	backdrop.className = "cafe-menu-backdrop";
+	backdrop.setAttribute("aria-hidden", "true");
+	backdrop.hidden = true;
+	document.body.append(backdrop);
+	let wasClosed = true;
+	function positionPanel() {
+		if (!panel) return;
+		if (mobile.matches) document.body.append(panel);
+		else {
+			anchor.after(panel);
+			void panelManager.closePanel("nav-menu-panel");
+		}
+		syncPanelState();
+	}
+	function syncPanelState() {
+		if (!panel) return;
+		const closed = panel.classList.contains("float-panel-closed");
+		panel.inert = closed;
+		toggle?.setAttribute("aria-expanded", String(!closed));
+		toggle?.setAttribute("aria-controls", "nav-menu-panel");
+		const modal = mobile.matches && !closed;
+		document.documentElement.classList.toggle("cafe-mobile-menu-open", modal);
+		backdrop.hidden = !modal;
+		panel.setAttribute("role", modal ? "dialog" : "navigation");
+		if (modal) {
+			panel.setAttribute("aria-modal", "true");
+			panel.setAttribute("aria-label", document.documentElement.lang.startsWith("zh") ? "店內漫遊" : "Inside the café");
+		} else panel.removeAttribute("aria-modal");
+		for (const id of ["blog-content", "cinematic-story", "top-row"]) {
+			const background = document.getElementById(id);
+			if (background) background.inert = modal;
+		}
+		if (modal && wasClosed) requestAnimationFrame(() => {
+			if (!panel.inert) panel.querySelector<HTMLButtonElement>("[data-close-nav]")?.focus();
+		});
+		wasClosed = closed;
+	}
+	async function closePanel() {
+		await panelManager.closePanel("nav-menu-panel");
+		syncPanelState();
+		toggle?.focus();
+	}
+	backdrop.addEventListener("click", closePanel);
+	panel?.querySelectorAll<HTMLElement>("[data-mobile-tool]").forEach(button => {
+		button.addEventListener("click", async () => {
+			await closePanel();
+			if (button.dataset.mobileTool === "theme") document.getElementById("scheme-switch")?.click();
+			else {
+				await panelManager.togglePanel("display-setting", true);
+				const settings = document.getElementById("display-setting");
+				// Opening animates asynchronously. Do not steal focus if the
+				// visitor has already moved on to search or another control.
+				if (document.activeElement === toggle && settings && !settings.classList.contains("float-panel-closed")) {
+					settings.querySelector<HTMLElement>("input, button")?.focus();
+				}
+			}
+		});
+	});
+	panel?.querySelector("[data-close-nav]")?.addEventListener("click", closePanel);
+	panel?.addEventListener("keydown", event => {
+		if (event.key === "Escape") { event.preventDefault(); void closePanel(); }
+		if (event.key === "Tab" && mobile.matches && !panel.inert) {
+			const focusable = [...panel.querySelectorAll<HTMLElement>("a[href], button:not([disabled])")].filter(item => !item.closest("[inert]") && item.getClientRects().length);
+			const first = focusable[0], last = focusable.at(-1);
+			if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+			else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+		}
+	});
+	panel?.querySelectorAll("a[href]").forEach(link => link.addEventListener("click", () => panelManager.closePanel("nav-menu-panel")));
+	if (panel) new MutationObserver(syncPanelState).observe(panel, { attributes: true, attributeFilter: ["class"] });
+	positionPanel();
+	mobile.addEventListener("change", positionPanel);
+	document.addEventListener("swup:page:view", () => {
+		void panelManager.closePanel("nav-menu-panel");
+		syncPanelState();
+	});
+	document.addEventListener("DOMContentLoaded", function () {
+		const mobileDropdowns = document.querySelectorAll(
+			"[data-mobile-dropdown]",
+		);
+
+		mobileDropdowns.forEach((dropdown) => {
+			const trigger = dropdown.querySelector(
+				"[data-mobile-dropdown-trigger]",
+			);
+			const submenu = dropdown.querySelector("[data-mobile-submenu]");
+
+			if (!trigger || !submenu) {
+				return;
+			}
+
+			trigger.addEventListener("click", function (e) {
+				e.preventDefault();
+				const isExpanded =
+					dropdown.getAttribute("data-expanded") === "true";
+
+				mobileDropdowns.forEach((otherDropdown) => {
+					if (otherDropdown !== dropdown) {
+						otherDropdown.setAttribute("data-expanded", "false");
+						const otherSubmenu = otherDropdown.querySelector<HTMLElement>("[data-mobile-submenu]");
+						if (otherSubmenu) otherSubmenu.inert = true;
+						const otherTrigger = otherDropdown.querySelector(
+							"[data-mobile-dropdown-trigger]",
+						);
+						if (otherTrigger) {
+							otherTrigger.setAttribute("aria-expanded", "false");
+						}
+					}
+				});
+
+				const newState = !isExpanded;
+				dropdown.setAttribute("data-expanded", newState.toString());
+				trigger.setAttribute("aria-expanded", newState.toString());
+				(submenu as HTMLElement).inert = !newState;
+			});
+		});
+	});
+</script>

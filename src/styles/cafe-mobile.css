@@ -1,0 +1,70 @@
+/* Phone refinements only; preserve the desktop profile/article composition. */
+.cafe-mobile-tools, .cafe-sheet-handle { display:none; }
+.cafe-menu-backdrop[hidden] { display:none; }
+@media (width < 768px) {
+  :root { --fab-group-right:max(12px, env(safe-area-inset-right)); --fab-group-bottom:calc(12px + env(safe-area-inset-bottom)); --fab-group-base-bottom:calc(12px + env(safe-area-inset-bottom)); }
+  #navbar > .cafe-navbar-rail { height:64px; padding-inline:max(10px, env(safe-area-inset-left)); }
+  #navbar .cafe-brand { min-width:0; padding:0 4px; min-height:44px; flex:1; justify-content:flex-start; }
+  #navbar .cafe-brand > div { min-width:0; }
+  #navbar .cafe-brand img { width:30px; height:30px; margin-right:6px; }
+  #navbar .cafe-brand-name { display:inline; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:calc(100vw - 198px); }
+  #navbar :is(#display-settings-switch, #scheme-switch) { display:none !important; }
+  html:not([data-layout-variant="post"]) #mobile-toc-switch { display:none !important; }
+  #navbar :is(#search-switch, #language-switch, #nav-menu-switch) { width:44px; height:44px; flex-shrink:0; border-radius:12px; }
+  #navbar #nav-menu-switch { background:var(--btn-regular-bg); color:var(--primary); }
+  #navbar #language-switch { gap:1px; }
+  #navbar #language-switch-label { font-size:10px; }
+  #navbar :is(#search-switch, #language-switch, #nav-menu-switch) svg { width:20px; height:20px; }
+  html.cafe-mobile-menu-open { overflow:hidden; }
+  .cafe-menu-backdrop { position:fixed; inset:0; z-index:90; background:#39252f5c; }
+  #nav-menu-panel { position:fixed !important; inset:auto 0 0 !important; z-index:100; width:100%; max-height:calc(85dvh - env(safe-area-inset-top)); border-radius:26px 26px 0 0; padding:12px 20px calc(20px + env(safe-area-inset-bottom)); overflow-y:auto; overscroll-behavior:contain; background:var(--cafe-surface) !important; translate:0; transform:none !important; box-shadow:0 -18px 60px #39252f22; transition:translate .25s var(--cafe-ease), opacity .2s !important; }
+  #nav-menu-panel.float-panel-closed { translate:0 32px; visibility:hidden; }
+  .cafe-sheet-handle { display:block; width:36px; height:4px; border-radius:4px; margin:0 auto 8px; background:var(--cafe-border); }
+  #nav-menu-panel .cafe-menu-heading { font-size:13px; letter-spacing:.04em; padding-bottom:10px; }
+  #nav-menu-panel .cafe-menu-close svg { width:20px; height:20px; }
+  #nav-menu-panel .mobile-menu-item > a, #nav-menu-panel .mobile-dropdown > button { min-height:52px; font-size:16px; padding-inline:12px; border-radius:14px; }
+  #nav-menu-panel .mobile-submenu a { min-height:48px; font-size:15px; padding-left:20px; }
+  #nav-menu-panel .mobile-submenu { border-left:1px solid var(--cafe-border); margin-left:20px; }
+  #nav-menu-panel .mobile-submenu svg { width:20px; height:20px; }
+  .cafe-mobile-tools { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; padding-top:16px; border-top:1px solid var(--cafe-border); }
+  .cafe-mobile-tools button { display:flex; align-items:center; justify-content:center; gap:8px; min-height:48px; font-size:13px; border:1px solid var(--cafe-border); border-radius:14px; color:var(--cafe-ink); cursor:pointer; }
+  .cafe-mobile-tools button:active { background:var(--btn-regular-bg); }
+  .cafe-mobile-tools button:focus-visible { outline:2px solid var(--primary); outline-offset:2px; }
+  .cafe-mobile-tools svg { width:20px; height:20px; color:var(--primary); }
+  html.cafe-mobile-menu-open .floating-controls-container { visibility:hidden; }
+  #search-panel { top:74px; left:12px; right:12px; width:auto; max-height:calc(var(--cafe-visual-height, 100dvh) - 88px); border-radius:20px; padding:14px; overscroll-behavior:contain; scroll-padding-top:12px; }
+  #search-input-mobile { font-size:16px; }
+  #search-panel .cafe-search-title { font-size:16px; }
+  #search-panel .cafe-search-excerpt { font-size:13px; line-height:1.65; }
+  #search-panel .cafe-search-hint { display:none; }
+  #display-setting { top:74px; right:12px; max-height:calc(100dvh - 90px); border-radius:20px; }
+  #display-setting button { min-height:44px; }
+  .cafe-post-card .cafe-post-body { padding:22px 20px 18px; }
+  .cafe-post-title { font-size:22px; line-height:1.4; text-wrap:pretty; }
+  .cafe-post-summary { font-size:15px; line-height:1.85; padding-right:0; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden; }
+  .cafe-post-card .cafe-post-meta { gap:4px 14px; margin-bottom:12px; }
+  .cafe-post-card .cafe-post-meta .meta-icon { width:18px; height:24px; margin-right:5px; background:transparent; }
+  .cafe-post-card .cafe-post-meta .meta-icon svg { width:17px; height:17px; }
+  .cafe-post-card .cafe-post-meta :is(span,a) { font-size:12px; }
+  .cafe-post-card .cafe-word-count { display:none; }
+  .cafe-post-footer { display:grid; grid-template-columns:minmax(0, 1fr); justify-content:stretch; gap:12px; padding-top:12px; }
+  .cafe-post-tags { gap:6px; }
+  .cafe-post-tags a { font-size:12px; padding-inline:10px; border-radius:10px; }
+  .cafe-post-read { min-height:46px; display:flex; justify-content:space-between; padding:0 14px; background:var(--btn-regular-bg); border:1px solid var(--cafe-border); border-radius:12px; font-size:13px; }
+  #post-container { padding-inline:20px; }
+  #post-container .markdown-content { font-size:16px; line-height:1.95; overflow-wrap:break-word; }
+  #post-title { font-size:26px; line-height:1.4; }
+  #blog-content { padding-bottom:80px; }
+  .floating-controls-container { bottom:calc(12px + env(safe-area-inset-bottom)); right:max(12px, env(safe-area-inset-right)); }
+  #music-control-center { width:calc(100vw - 24px); max-width:390px; max-height:calc(100dvh - 90px - env(safe-area-inset-bottom)); }
+  #music-control-center .fab-radio-heading button { width:44px; height:44px; }
+  #music-control-center .controls-row button { min-width:44px; min-height:44px; }
+}
+@media (width < 360px) {
+  #navbar .cafe-brand-name { font-size:12px; }
+  .cafe-post-card .cafe-post-body { padding:20px 16px 16px; }
+  .cafe-post-title { font-size:20px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  #nav-menu-panel { transition:none !important; }
+}

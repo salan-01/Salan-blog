@@ -1,0 +1,9 @@
+.pnpm-store/
+node_modules/
+.git/
+.env*
+dist/
+.astro/
+.agents/
+.codex/
+.cafe-preview/

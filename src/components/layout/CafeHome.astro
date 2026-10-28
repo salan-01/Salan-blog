@@ -1,0 +1,293 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import hostArtwork from "../../../public/assets/home/salan-character-transparent.png";
+import nightCafe from "../../../public/assets/story/last-train-cafe-v1.png";
+import { profileConfig } from "../../config";
+import { loadAnimeData } from "../../utils/anime-data";
+import { getPostPublicDescription } from "../../utils/post-card-content";
+import { getPostUrl, getTagUrl } from "../../utils/url-utils";
+
+interface Props { posts: CollectionEntry<"posts">[]; }
+const { posts } = Astro.props;
+const anime = loadAnimeData("bilibili-data.json");
+const shelf = anime.filter(item => item.cover).slice(0, 6);
+const storyKind = (post: CollectionEntry<"posts">) => post.data.pinned ? "welcome" : post.data.tags.some(tag => ["Short Story", "短篇故事"].includes(tag)) ? "fiction" : "notes";
+const englishTags: Record<string,string> = { "生活":"Life", "技術":"Technology", "隨筆":"Notes" };
+const rooms = [
+  { label: "About the host", href: "/about/", icon: "material-symbols:person-outline-rounded" },
+  { label: "Friends", href: "/friends/", icon: "material-symbols:favorite-outline-rounded" },
+  { label: "Devices", href: "/devices/", icon: "material-symbols:devices-outline-rounded" },
+];
+---
+
+<section class="cafe-home" aria-labelledby="cafe-home-heading">
+  <header class="cafe-home-header">
+    <div><p class="cafe-kicker">Salan's little corner of the internet</p><h2 id="cafe-home-heading">Make yourself<br/><em>at home.</em></h2></div>
+    <div class="cafe-home-index"><span>Take your time.</span><a href="#cafe-journal">Read a story</a><a href="#cafe-watchlist">Browse the watchlist</a></div>
+  </header>
+
+  <div class="cafe-journal-heading" id="cafe-journal">
+    <h3><span aria-hidden="true">01</span><span>Stories on the table</span></h3>
+    <div class="cafe-filter" role="group" aria-label="Filter stories">
+      <button type="button" data-cafe-filter="all" aria-pressed="true">All stories</button>
+      {posts.some(post => storyKind(post) === "welcome") && <button type="button" data-cafe-filter="welcome" aria-pressed="false">Welcome</button>}
+      {posts.some(post => storyKind(post) === "fiction") && <button type="button" data-cafe-filter="fiction" aria-pressed="false">Fiction</button>}
+      {posts.some(post => storyKind(post) === "notes") && <button type="button" data-cafe-filter="notes" aria-pressed="false">Notes</button>}
+    </div>
+  </div>
+  <div class="cafe-reading-room">
+    <div class="cafe-story-grid">
+      {posts.map((post, index) => <article class:list={["cafe-story-tile", { "cafe-welcome-tile": post.data.pinned, "cafe-fiction-tile": !post.data.pinned }]} data-cafe-kind={storyKind(post)}>
+		{storyKind(post) === "fiction" && <Image class="cafe-tile-scene" src={nightCafe} alt="" width={1440} widths={[1100,1440]} sizes="(max-width: 767px) 1100px, 1000px" format="webp" loading="lazy"/>}
+        <div class="cafe-tile-top"><span>{post.data.pinned ? "A seat for you" : "From the journal"}</span><span aria-hidden="true">{String(index + 1).padStart(2,"0")}</span></div>
+        {post.data.pinned && <Image class="cafe-host-art" src={hostArtwork} alt="" width={500} height={500} format="webp" loading="lazy"/>}
+        {!post.data.pinned && <div class="cafe-story-orbit" aria-hidden="true"><span>✦</span></div>}
+        <div class="cafe-tile-copy"><h4><a href={getPostUrl(post)}>{post.data.title}</a></h4><p>{getPostPublicDescription(post.data)}</p></div>
+        <div class="cafe-tile-tags">{post.data.tags.slice(0,3).map(tag => <a href={getTagUrl(tag)}>{englishTags[tag] || tag}</a>)}</div>
+        <div class="cafe-tile-bottom"><time datetime={post.data.published.toISOString()}>{post.data.published.toISOString().slice(0,10)}</time><a class="cafe-story-read" href={getPostUrl(post)}><span>Read the story</span><Icon name="material-symbols:arrow-outward-rounded" /></a></div>
+      </article>)}
+      <p class="cafe-filter-status" role="status" aria-live="polite"></p>
+    </div>
+
+    <aside class="cafe-host-desk" aria-labelledby="cafe-host-heading">
+      <div class="cafe-host-summary"><div class="cafe-host-id"><img src="/assets/home/salan-character-transparent.webp" alt="" width="64" height="64" loading="lazy"/><div><p>Your host</p><h3 id="cafe-host-heading">Salan</h3></div><span aria-hidden="true">✧</span></div>
+      <p class="cafe-host-note">A little café for stories, curiosity, and the things I love.</p>
+      <div class="cafe-host-socials">{profileConfig.links.map(link => <a href={link.url} target="_blank" rel="noopener noreferrer" aria-label={link.name} title={link.name}><Icon name={link.icon}/></a>)}</div></div>
+      <div class="cafe-host-rooms"><p class="cafe-kicker">Around the café</p>
+      <nav aria-label="Around the café">{rooms.map(room => <a href={room.href}><Icon name={room.icon}/><span>{room.label}</span><span aria-hidden="true">↗</span></a>)}</nav>
+      <a class="cafe-archive-link" href="/archive/"><span>The whole journal</span><span>{posts.length.toString().padStart(2,"0")}</span></a></div>
+    </aside>
+  </div>
+
+  {shelf.length > 0 && <section class="cafe-watchlist" id="cafe-watchlist" aria-labelledby="cafe-watchlist-heading">
+    <div class="cafe-watchlist-heading"><div><p class="cafe-kicker">From my Bilibili collection</p><h3 id="cafe-watchlist-heading"><span aria-hidden="true">02</span><span>One more episode.</span></h3></div><div class="cafe-shelf-actions"><a href="/anime/">Full watchlist</a><button type="button" data-shelf-direction="-1" aria-label="Previous shows"><Icon name="material-symbols:arrow-back-rounded"/></button><button type="button" data-shelf-direction="1" aria-label="Next shows"><Icon name="material-symbols:arrow-forward-rounded"/></button></div></div>
+    <div class="cafe-poster-shelf" tabindex="0" aria-label="Anime watchlist preview">
+      {shelf.map((item,index) => <a class="cafe-anime-poster" href={item.link} target="_blank" rel="noopener noreferrer" draggable="false"><div class="cafe-poster-image"><img src={item.cover} alt={item.title} width="220" height="280" loading="lazy" referrerpolicy="no-referrer" draggable="false"/><span class="cafe-poster-number">{String(index+1).padStart(2,"0")}</span><span class="cafe-poster-open">View on Bilibili</span></div><h4>{item.title}</h4><p>{item.year}</p></a>)}
+    </div>
+  </section>}
+</section>
+
+<script>
+  function initCafeHome() {
+    const home = document.querySelector<HTMLElement>(".cafe-home");
+    if (!home || home.dataset.bound) return;
+    home.dataset.bound = "true";
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const cards = [...home.querySelectorAll<HTMLElement>(".cafe-story-tile")];
+    const filters = home.querySelectorAll<HTMLButtonElement>("[data-cafe-filter]");
+    const syncStatus = () => {
+      const status = home.querySelector<HTMLElement>(".cafe-filter-status");
+      if (status) status.textContent = document.documentElement.lang.startsWith("zh") ? `顯示 ${cards.filter(card => !card.hidden).length} 篇文章` : `${cards.filter(card => !card.hidden).length} stories shown`;
+    };
+    const lifecycle = new AbortController();
+    document.addEventListener("mizuki:language-changed", syncStatus, { signal: lifecycle.signal });
+    filters.forEach(button => button.addEventListener("click", () => {
+      filters.forEach(other => other.setAttribute("aria-pressed", String(other === button)));
+      cards.forEach(card => {
+        card.hidden = button.dataset.cafeFilter !== "all" && card.dataset.cafeKind !== button.dataset.cafeFilter;
+        if (!card.hidden && !reduced.matches) card.animate([{ opacity: .4, transform: "translateY(12px)" },{ opacity: 1, transform: "translateY(0)" }], { duration: 380, easing: "cubic-bezier(.22,1,.36,1)" });
+      });
+      syncStatus();
+    }));
+    const shelf = home.querySelector<HTMLElement>(".cafe-poster-shelf");
+    const controls = home.querySelectorAll<HTMLButtonElement>("[data-shelf-direction]");
+    const updateShelfControls = () => controls.forEach(button => {
+      if (!shelf) return;
+      button.disabled = button.dataset.shelfDirection === "-1" ? shelf.scrollLeft < 2 : shelf.scrollLeft + shelf.clientWidth >= shelf.scrollWidth - 2;
+    });
+    controls.forEach(button => button.addEventListener("click", () => shelf?.scrollBy({ left: Number(button.dataset.shelfDirection) * (shelf.clientWidth * .75), behavior: reduced.matches ? "instant" : "smooth" })));
+    shelf?.addEventListener("scroll", updateShelfControls, { passive: true });
+    let drag: { id:number; x:number; scroll:number; moved:boolean } | null = null;
+    let suppressClick = false;
+    shelf?.addEventListener("pointerdown", event => {
+      if (event.pointerType !== "mouse" || event.button !== 0) return;
+      suppressClick = false;
+      drag = { id:event.pointerId, x:event.clientX, scroll:shelf.scrollLeft, moved:false };
+    });
+    shelf?.addEventListener("pointermove", event => {
+      if (!drag || event.pointerId !== drag.id) return;
+      const distance = event.clientX - drag.x;
+      if (Math.abs(distance) > 6 && !drag.moved) { drag.moved = true; shelf.setPointerCapture(event.pointerId); shelf.classList.add("is-dragging"); }
+      if (drag.moved) { event.preventDefault(); shelf.scrollLeft = drag.scroll - distance; }
+    });
+    const endDrag = () => { suppressClick = drag?.moved ?? false; drag = null; shelf?.classList.remove("is-dragging"); };
+    shelf?.addEventListener("pointerup", endDrag);
+    shelf?.addEventListener("pointercancel", endDrag);
+    shelf?.addEventListener("pointerleave", () => { if (drag && !drag.moved) endDrag(); });
+    shelf?.addEventListener("click", event => { if (suppressClick) { event.preventDefault(); event.stopPropagation(); suppressClick = false; } }, true);
+    const shelfObserver = new ResizeObserver(updateShelfControls);
+    if (shelf) shelfObserver.observe(shelf);
+    updateShelfControls();
+    const arrival = new IntersectionObserver(entries => entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add("cafe-room-arrive");
+      arrival.unobserve(entry.target);
+    }), { threshold: .1 });
+    if (!reduced.matches) home.querySelectorAll(".cafe-story-tile, .cafe-host-desk, .cafe-watchlist-heading").forEach(element => arrival.observe(element));
+    document.addEventListener("swup:content:replace", () => { lifecycle.abort(); shelfObserver.disconnect(); arrival.disconnect(); }, { once: true, signal: lifecycle.signal });
+    cards.forEach(card => {
+      card.addEventListener("pointermove", event => {
+        if (event.pointerType !== "mouse" || reduced.matches) return;
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty("--light-x", `${event.clientX - rect.left}px`);
+        card.style.setProperty("--light-y", `${event.clientY - rect.top}px`);
+      });
+    });
+  }
+  initCafeHome();
+  document.addEventListener("astro:page-load", initCafeHome);
+  document.addEventListener("swup:page:view", initCafeHome);
+</script>
+
+<style is:global>
+  html[data-layout-variant="home"] #main-grid { grid-template-columns: minmax(0,1fr) !important; }
+  html[data-layout-variant="home"] #main-grid #sidebar { display: none !important; }
+  html[data-layout-variant="home"] #swup-container { grid-column: 1 / -1 !important; min-width: 0; }
+  .cafe-home { --room-bg: #fffaf6; --room-ink: #49313f; --room-muted: #7b5b68; --room-pink: #b84d77; --room-line: #ca8ba131; color: var(--room-ink); padding: clamp(24px,4vw,64px) clamp(12px,3vw,48px); background:radial-gradient(ellipse at 0 0,#ffe2d9a6,transparent 42%),var(--room-bg); border-radius: 0; margin-top: 0; border: 0; }
+  .dark .cafe-home { --room-bg:#241d26; --room-ink:#fbe9ee; --room-muted:#c4a3b1; --room-pink:#ee91b2; --room-line:#d696af30; border-color:var(--room-line); }
+  .cafe-home a, .cafe-home button { -webkit-tap-highlight-color: transparent; }
+  .cafe-home :is(a,button,[tabindex]):focus-visible { outline: 2px solid var(--room-pink); outline-offset: 5px; }
+  .cafe-home-header { display:flex; justify-content:space-between; align-items:flex-end; gap:2rem; padding-bottom:3rem; }
+  .cafe-kicker { font-size:.75rem; letter-spacing:.09em; color:var(--room-muted); margin-bottom:1rem; }
+  .cafe-home-header h2 { font-size:clamp(2.8rem,5vw,5rem); line-height:1.08; font-weight:500; letter-spacing:-.055em; }
+  .cafe-home-header em { font-family:Georgia,serif; font-weight:400; color:var(--room-pink); }
+  .cafe-home-index { display:flex; flex-direction:column; gap:.5rem; min-width:180px; border-left:1px solid var(--room-line); padding-left:2rem; }
+  .cafe-home-index > span { font-size:.8rem; color:var(--room-muted); padding-bottom:.5rem; }
+  .cafe-home-index a { font-size:.9rem; line-height:2; width:fit-content; border-bottom:1px solid transparent; }
+  .cafe-home-index a:hover { color:var(--room-pink); border-color:currentColor; }
+  .cafe-journal-heading { display:flex; justify-content:space-between; align-items:center; gap:1rem; border-top:1px solid var(--room-line); padding:1.5rem 0; scroll-margin-top:100px; }
+  .cafe-journal-heading h3, .cafe-watchlist-heading h3 { display:flex; align-items:center; gap:1rem; font-size:1.4rem; letter-spacing:-.035em; }
+  .cafe-journal-heading h3 > span:first-child, .cafe-watchlist-heading h3 > span:first-child { font-size:.8rem; font-weight:400; color:var(--room-pink); letter-spacing:.06em; }
+  .cafe-filter { display:flex; background:color-mix(in srgb,var(--room-pink) 6%,transparent); border-radius:999px; padding:4px; gap:2px; }
+  .cafe-filter button { min-height:40px; padding:.45rem 1rem; font-size:.8rem; color:var(--room-muted); border-radius:999px; cursor:pointer; transition:background .25s,color .25s,box-shadow .25s; }
+  .cafe-filter button[aria-pressed="true"] { background:var(--room-bg); color:var(--room-pink); box-shadow:0 2px 8px #70445215; }
+  .cafe-reading-room { display:grid; grid-template-columns:minmax(0,1fr); align-items:start; gap:48px; }
+  .cafe-story-grid { display:grid; grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr); gap:24px; min-width:0; }
+  .cafe-story-tile { position:relative; isolation:isolate; overflow:hidden; border-radius:8px 40px 8px 40px; padding:2rem; border:1px solid var(--room-line); min-height:540px; display:flex; flex-direction:column; transition:box-shadow .35s,translate .35s; }
+  .cafe-story-tile[hidden] { display:none; }
+  .cafe-story-tile::after { content:""; position:absolute; inset:0; pointer-events:none; z-index:-1; opacity:0; background:radial-gradient(320px circle at var(--light-x,50%) var(--light-y,50%),#ffdcdb45,transparent 70%); transition:opacity .3s; }
+  .cafe-story-tile:hover::after { opacity:1; }
+  .cafe-tile-top, .cafe-tile-bottom { display:flex; justify-content:space-between; align-items:center; gap:1rem; font-size:.75rem; color:var(--room-muted); }
+  .cafe-tile-top { letter-spacing:.08em; margin-bottom:3rem; position:relative; z-index:1; }
+  .cafe-tile-top > span:last-child { font-family:Georgia,serif; font-size:1.2rem; }
+  .cafe-welcome-tile { background:linear-gradient(120deg,#fbe8e1,#fff5eb); min-height:330px; }
+  .dark .cafe-welcome-tile { background:linear-gradient(120deg,#493040,#332633); }
+  .cafe-tile-copy { position:relative; z-index:1; }
+  .cafe-tile-copy h4 { font-size:clamp(1.9rem,2.8vw,2.9rem); line-height:1.2; font-weight:500; letter-spacing:-.045em; margin-bottom:1rem; }
+  .cafe-tile-copy h4 a::after { content:""; position:absolute; inset:0; }
+  .cafe-tile-copy p { max-width:40ch; color:var(--room-muted); font-size:.9rem; line-height:1.8; }
+  .cafe-welcome-tile .cafe-tile-copy { width:100%; }
+  .cafe-welcome-tile .cafe-tile-copy h4 { max-width:12ch; }
+  .cafe-welcome-tile .cafe-tile-copy p { max-width:27ch; }
+  .cafe-host-art { position:absolute; width:34%; height:35%; object-fit:contain; right:2%; bottom:88px; filter:drop-shadow(0 12px 16px #aa698e18); transition:transform .5s; }
+  .cafe-tile-tags { display:flex; gap:12px; position:relative; z-index:2; margin-top:1rem; flex-wrap:wrap; }
+  .cafe-tile-tags a { display:flex; align-items:center; min-height:32px; font-size:.75rem; color:var(--room-pink); border-bottom:1px solid transparent; }
+  .cafe-tile-tags a:hover { border-color:currentColor; }
+  .cafe-fiction-tile .cafe-tile-tags a { color:#ffc1d6; }
+  .cafe-room-arrive { animation:cafe-room-arrive .65s cubic-bezier(.22,1,.36,1) both; }
+  @keyframes cafe-room-arrive { from { opacity:.3; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+  .cafe-tile-bottom { position:relative; z-index:2; border-top:1px solid var(--room-line); margin-top:auto; padding-top:1rem; }
+  .cafe-story-read { display:flex; align-items:center; gap:.6rem; min-height:44px; color:var(--room-pink); font-size:.85rem; }
+  .cafe-story-read svg { width:20px; height:20px; transition:transform .3s; }
+  .cafe-fiction-tile { color:#ffeff4; background:radial-gradient(ellipse at 90% 10%,#8b506b,#513245 55%,#3c293c); }
+  .cafe-fiction-tile :is(.cafe-tile-top,.cafe-tile-bottom,.cafe-tile-copy p) { color:#e5c2d1; }
+  .cafe-fiction-tile .cafe-tile-copy { max-width:70%; }
+  .cafe-fiction-tile .cafe-tile-copy h4 { font-size:clamp(2rem,3.1vw,3.6rem); max-width:12ch; text-wrap:balance; }
+  .cafe-tile-scene { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:66% center; z-index:-2; transition:transform .8s cubic-bezier(.22,1,.36,1); }
+  .cafe-fiction-tile:has(.cafe-tile-scene)::before { content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg,#251627e8,#251627c4 42%,#25162724),linear-gradient(0deg,#251627a6,transparent 45%); }
+  .cafe-fiction-tile:has(.cafe-tile-scene) .cafe-story-orbit { display:none; }
+  .cafe-fiction-tile:hover .cafe-tile-scene { transform:scale(1.045); }
+  .cafe-fiction-tile .cafe-tile-bottom { border-color:#e7b2c12b; }
+  .cafe-fiction-tile .cafe-story-read { color:#ffc1d6; }
+  .cafe-story-orbit { position:absolute; border:1px solid #ffd2df26; border-radius:50%; width:340px; height:340px; right:-130px; top:-100px; transform:rotate(-25deg); }
+  .cafe-story-orbit::before, .cafe-story-orbit::after { content:""; position:absolute; inset:24px; border:1px solid #ffd2df21; border-radius:50%; }
+  .cafe-story-orbit::after { inset:55px; }
+  .cafe-story-orbit span { position:absolute; left:12px; top:80px; font-size:2rem; color:#ffc4d8; }
+  .cafe-filter-status { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+  .cafe-host-desk { display:grid; grid-template-columns:1fr 1fr; gap:4rem; border-block:1px solid var(--room-line); padding:2rem 0; }
+  .cafe-host-summary { max-width:420px; }
+  .cafe-host-rooms { display:grid; grid-template-columns:1fr 130px; gap:0 2rem; align-items:start; }
+  .cafe-host-rooms > .cafe-kicker { grid-column:1 / -1; }
+  .cafe-host-id { display:flex; align-items:center; gap:1rem; }
+  .cafe-host-id img { width:58px; height:58px; object-fit:contain; }
+  .cafe-host-id p { font-size:.75rem; color:var(--room-muted); }
+  .cafe-host-id h3 { font-size:1.5rem; font-weight:500; letter-spacing:-.04em; }
+  .cafe-host-id > span { margin-left:auto; color:var(--room-pink); font-size:1.4rem; }
+  .cafe-host-note { font-size:.9rem; line-height:1.8; color:var(--room-muted); padding:1.5rem 0; }
+  .cafe-host-socials { display:flex; gap:.7rem; }
+  .cafe-host-socials a { width:44px; height:44px; display:grid; place-items:center; border:1px solid var(--room-line); border-radius:50%; transition:background .25s,translate .25s; }
+  .cafe-host-socials svg { width:18px; height:18px; }
+  .cafe-host-socials a:hover { background:var(--room-pink); color:var(--room-bg); translate:0 -3px; }
+  .cafe-desk-divider { height:1px; background:var(--room-line); margin:1.5rem 0; }
+  .cafe-host-desk nav a { display:flex; align-items:center; gap:.8rem; min-height:52px; font-size:.85rem; border-bottom:1px solid var(--room-line); transition:color .2s,padding .2s; }
+  .cafe-host-desk nav svg { width:19px; height:19px; color:var(--room-pink); }
+  .cafe-host-desk nav a > span:last-child { margin-left:auto; color:var(--room-muted); }
+  .cafe-host-desk nav a:hover { color:var(--room-pink); padding-left:5px; }
+  .cafe-archive-link { display:flex; flex-direction:column-reverse; justify-content:start; gap:1rem; font-size:.8rem; align-items:start; min-height:44px; border-left:1px solid var(--room-line); padding-left:1.5rem; }
+  .cafe-archive-link > span:last-child { font-size:4rem; line-height:1; font-family:Georgia,serif; color:var(--room-pink); }
+  .cafe-watchlist { margin-top:3.5rem; padding-top:2rem; border-top:1px solid var(--room-line); scroll-margin-top:110px; }
+  .cafe-watchlist-heading { display:flex; justify-content:space-between; gap:1rem; align-items:end; margin-bottom:1.5rem; }
+  .cafe-watchlist-heading .cafe-kicker { margin-bottom:.5rem; }
+  .cafe-watchlist-heading h3 { font-size:2rem; }
+  .cafe-shelf-actions { display:flex; align-items:center; gap:8px; }
+  .cafe-shelf-actions a { font-size:.85rem; color:var(--room-pink); margin-right:10px; min-height:44px; display:flex; align-items:center; }
+  .cafe-shelf-actions button { width:44px; height:44px; border:1px solid var(--room-line); border-radius:50%; display:grid; place-items:center; cursor:pointer; transition:background .2s; }
+  .cafe-shelf-actions button:hover:not(:disabled) { background:var(--room-pink); color:var(--room-bg); }
+  .cafe-shelf-actions button:disabled { opacity:.3; cursor:default; }
+  .cafe-shelf-actions svg { width:20px; height:20px; }
+  .cafe-poster-shelf { display:flex; gap:20px; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:thin; scrollbar-color:var(--room-line) transparent; padding:8px 2px 18px; cursor:grab; }
+  .cafe-poster-shelf.is-dragging { cursor:grabbing; scroll-snap-type:none; user-select:none; }
+  .cafe-poster-shelf.is-dragging a { cursor:grabbing; }
+  .cafe-anime-poster { flex:0 0 calc((100% - 80px) / 5); min-width:160px; scroll-snap-align:start; }
+  .cafe-poster-image { position:relative; aspect-ratio:220/280; overflow:hidden; border-radius:14px; background:var(--room-line); box-shadow:0 8px 16px #5934480d; }
+  .cafe-poster-image img { width:100%; height:100%; object-fit:cover; transition:transform .5s; }
+  .cafe-poster-number { position:absolute; top:10px; left:10px; background:#322231c9; color:#fff; padding:5px 8px; font-size:.7rem; border-radius:6px; }
+  .cafe-poster-open { position:absolute; bottom:0; left:0; right:0; text-align:center; background:#3b253de0; color:#fff; font-size:.8rem; padding:14px 6px; transform:translateY(100%); transition:transform .3s; }
+  .cafe-anime-poster:hover .cafe-poster-image img { transform:scale(1.05); }
+  .cafe-anime-poster:is(:hover,:focus-visible) .cafe-poster-open { transform:none; }
+  .cafe-anime-poster h4 { font-size:.9rem; line-height:1.5; margin:1rem 0 .25rem; font-weight:500; }
+  .cafe-anime-poster > p { font-size:.75rem; color:var(--room-muted); }
+  @media (hover:hover) { .cafe-story-tile:hover { translate:0 -4px; box-shadow:0 16px 36px #75455716; } .cafe-story-tile:hover .cafe-host-art { transform:rotate(3deg) translateY(-4px); } .cafe-story-tile:hover .cafe-story-read svg { transform:translate(2px,-2px); } }
+  @media (width < 1024px) { .cafe-reading-room { gap:28px; } .cafe-tile-copy h4 { font-size:2rem; } .cafe-story-tile { padding:1.5rem; } .cafe-host-desk { gap:2rem; } .cafe-host-rooms { grid-template-columns:1fr; } .cafe-archive-link { display:none; } }
+  @media (width < 768px) {
+    .cafe-home { border-radius:0; margin-top:0; padding:34px 12px; }
+    .cafe-home-header { align-items:start; padding-bottom:2rem; gap:1rem; }
+    .cafe-home-header h2 { font-size:2.8rem; }
+    .cafe-home-header .cafe-kicker { max-width:22ch; line-height:1.6; }
+    .cafe-home-index { display:none; }
+    .cafe-journal-heading { align-items:start; flex-direction:column; gap:1rem; padding:1.3rem 0; }
+    .cafe-journal-heading h3 { font-size:1.25rem; }
+    .cafe-filter { width:100%; }
+    .cafe-filter button { flex:1; padding:.5rem; min-height:44px; }
+    .cafe-reading-room { grid-template-columns:1fr; }
+    .cafe-story-grid { grid-template-columns:1fr; gap:20px; }
+    .cafe-story-tile { padding:1.5rem; border-radius:6px 30px 6px 30px; min-height:420px; }
+    .cafe-tile-top { margin-bottom:1.4rem; }
+    .cafe-welcome-tile { min-height:430px; }
+    .cafe-welcome-tile .cafe-tile-copy { width:100%; }
+    .cafe-welcome-tile .cafe-tile-copy h4 { max-width:9ch; font-size:2.15rem; }
+    .cafe-welcome-tile .cafe-tile-copy p { width:65%; font-size:.85rem; }
+    .cafe-host-art { width:38%; height:47%; top:auto; bottom:78px; right:1%; }
+    .cafe-welcome-tile .cafe-tile-bottom { margin-top:auto; }
+    .cafe-fiction-tile .cafe-tile-copy { max-width:100%; }
+    .cafe-fiction-tile .cafe-tile-copy h4 { font-size:2.4rem; max-width:12ch; }
+    .cafe-fiction-tile:has(.cafe-tile-scene) { min-height:580px; }
+    .cafe-fiction-tile:has(.cafe-tile-scene)::before { background:linear-gradient(90deg,#251627dc,#25162778 65%,#25162730),linear-gradient(0deg,#251627a6,transparent 50%); }
+    .cafe-fiction-tile .cafe-tile-copy p { font-size:1rem; max-width:25ch; }
+    .cafe-tile-bottom { gap:.6rem; font-size:.7rem; }
+    .cafe-story-read { font-size:.8rem; }
+    .cafe-host-desk { grid-template-columns:1fr; gap:1.5rem; padding:1.5rem 0; }
+    .cafe-host-note { padding:1rem 0; }
+    .cafe-host-socials { justify-content:start; }
+    .cafe-watchlist { margin-top:2rem; padding-top:1.5rem; }
+    .cafe-watchlist-heading { flex-wrap:wrap; gap:.8rem; }
+    .cafe-watchlist-heading h3 { font-size:1.7rem; }
+    .cafe-shelf-actions { width:100%; }
+    .cafe-shelf-actions a { margin-right:auto; }
+    .cafe-poster-shelf { gap:14px; }
+    .cafe-anime-poster { flex-basis:46%; min-width:135px; }
+  }
+  @media (prefers-reduced-motion:reduce) { .cafe-home *, .cafe-home *::after { transition:none !important; } .cafe-story-tile:hover { translate:none; } .cafe-fiction-tile:hover .cafe-tile-scene { transform:none; } }
+</style>

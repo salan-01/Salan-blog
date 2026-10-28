@@ -1,0 +1,321 @@
+---
+import { Icon } from "astro-icon/components";
+
+import I18nKey from "../../i18n/i18nKey";
+import { getTranslation } from "../../i18n/translation";
+import { getAnimeTranslationPairs } from "../../utils/anime-localization.mjs";
+
+const zh = getTranslation("zh_TW");
+const en = getTranslation("en");
+
+const translationPairs = Object.values(I18nKey)
+	.map((key) => [zh[key], en[key]] as const)
+	.filter(([traditionalChinese, english]) =>
+		Boolean(traditionalChinese && english && traditionalChinese !== english),
+	);
+
+translationPairs.push(
+	["亮色／暗色", "Light / dark"],
+	["外觀", "Appearance"],
+	["分頁導覽", "Pagination"],
+	["上一頁", "Previous page"],
+	["OpenAI 的 AI 程式設計夥伴", "OpenAI's AI coding partner"],
+	["造訪 Dot 網站", "Visit Dot's website"],
+	["網站", "Website"],
+	["下一頁", "Next page"],
+	["Salan 的網路小角落", "Salan's little corner of the internet"],
+	["就當作", "Make yourself"],
+	["回到家吧。", "at home."],
+	["慢慢來，不著急。", "Take your time."],
+	["讀一篇故事", "Read a story"],
+	["逛逛追番清單", "Browse the watchlist"],
+	["桌上的故事", "Stories on the table"],
+	["篩選文章", "Filter stories"],
+	["所有故事", "All stories"],
+	["歡迎光臨", "Welcome"],
+	["短篇物語", "Fiction"],
+	["店主", "Your host"],
+	["一間收藏故事、好奇心，還有心愛之物的小小喫茶店。", "A little café for stories, curiosity, and the things I love."],
+	["在店裡逛逛", "Around the café"],
+	["整本手記", "The whole journal"],
+	["來自我的 Bilibili 收藏", "From my Bilibili collection"],
+	["再看一集就好。", "One more episode."],
+	["完整追番清單", "Full watchlist"],
+	["上一組番劇", "Previous shows"],
+	["下一組番劇", "Next shows"],
+	["追番清單預覽", "Anime watchlist preview"],
+	["在 Bilibili 觀看", "View on Bilibili"],
+	["為你留的座位", "A seat for you"],
+	["手記選頁", "From the journal"],
+	["翻開故事", "Read the story"],
+	["店內漫遊", "Inside the café"],
+	["關於店主", "About the host"],
+	["我的追番清單", "On my watchlist"],
+	["日常的小片刻", "Little everyday moments"],
+	["值得留下的風景", "Scenes worth keeping"],
+	["陪伴日常的工具", "Tools I use"],
+	["喫茶店電台", "Café Radio"],
+	["正在播放", "Now playing"],
+	["暫停中", "On pause"],
+	["關閉播放器", "Close player"],
+	["關閉選單", "Close menu"],
+	["音樂進度", "Music progress"],
+	["播放", "Play"],
+	["暫停", "Pause"],
+	["門鈴響了，熱茶備好了，窗邊的位置也替你留著。請進！", "The bell has rung, the tea is warm, and your window seat is ready. Come on in!"],
+	["叮鈴——門上的小鈴鐺清脆地響了一聲。", "The little bell above the door gives a bright ring."],
+	["橙髮少女端著一盤鬆餅，從吧檯後探出頭。她理了理圍裙上的緞帶，朝你露出笑容。", "An orange-haired girl peeks out from behind the counter, holding a tray of pancakes. She straightens the ribbon on her apron and smiles."],
+	["「歡迎光臨 Salanの喫茶店！今天是一位嗎？太好了，窗邊剛好有空位。」", "“Welcome to Salan’s Café! Just one today? Wonderful—the window seat is free.”"],
+	["她把茶杯放到桌上。一顆金色的小星星從杯碟底下溜了出來，又被她用茶匙輕輕推回去。", "She sets a cup on the table. A tiny gold star slips out from under the saucer, and she nudges it back with a spoon."],
+	["「那個請不要在意。有客人來的時候，保溫魔法總會有點興奮。」", "“Please ignore that. The warming spell gets a little excited when we have guests.”"],
+	["今日菜單", "Today’s menu"],
+	["「那麼，今天想來點什麼呢？」她翻開一本小菜單。書頁間夾著書籤、隨手寫的筆記，還有一塊形狀十分可疑的鬆餅漬。", "“Now, what are you in the mood for?” She opens a small menu. Between its pages are bookmarks, scribbled notes, and one suspiciously pancake-shaped stain."],
+	["「我看看……這幾頁是 Salan 最近遇到的事。啊，這篇是在聊一部害人熬夜追完的動畫。」她又翻了一頁。「這些筆記就寫得比較久了。聽說是折騰了好一陣子，終於弄懂，所以趕快記下來的。」", "“Let’s see… Salan left a few stories here, about things that happened lately. Oh, and this page is about an anime that kept them up far too late.” She turns another page. “These notes took a little longer to write. Apparently, something finally worked after a lot of tinkering, so they wanted to keep a record.”"],
+	["她把菜單往你面前推了推。「從哪一頁開始都可以。看到有趣的地方，等我泡茶的時候，也講給我聽吧。」", "She slides the menu toward you. “Start wherever you like. If you find something interesting, you can tell me about it while I make the tea.”"],
+	["「有些頁面還在寫。如果看見空書架，那只是 Salan 還沒想好要放什麼。你可以隨意逛逛。」", "“Some pages are still being written. If you find an empty shelf, it just means Salan hasn’t decided what to put there yet. You’re welcome to browse.”"],
+	["這裡沒有必接任務", "No quest required"],
+	["這裡沒有每日簽到獎勵，下一個連結後面也沒有等著你的魔王。你可以讀完一篇文章，翻幾張照片，或只是聽一首歌。", "There is no daily check-in reward here, and no boss waiting behind the next link. You can read a whole article, look at a few pictures, or simply listen to a song."],
+	["「如果累了，不說話也沒關係。」她把糖罐往你面前挪了挪。「熱茶就放在這裡喔。」", "“And if you’re tired, you don’t have to say anything.” She moves the sugar bowl a little closer. “I’ll leave the tea here.”"],
+	["音樂輕輕地播著，陽光落在杯沿上。這一小會兒，沒有什麼事情非得立刻回覆。", "The music plays softly. Sunlight catches the rim of your cup. For a moment, nothing needs an immediate reply."],
+	["離開之前", "Before you go"],
+	["「想翻以前的故事，可以去『歸檔』。『我的』裡放著一些關於 Salan 的事情，『友站』則通往其他可愛的地方。」", "“The archive is where we keep our past stories. My Space has a few things about Salan, and Friends will take you to some other lovely places.”"],
+	["她頓了一下，又往你的盤子裡添了一塊有些歪的鬆餅。", "She pauses, then adds a slightly uneven pancake to your plate."],
+	["「初次見面的小禮物。形狀的話……是限定款。」", "“A little welcome gift. The shape is… limited edition.”"],
+	["那麼，挑個喜歡的位置坐下吧。這間小小的喫茶店，正隨著每一頁文字、每一位來客，慢慢變得熱鬧。", "So, take whichever seat you like. This little café is still growing, one page and one visitor at a time."],
+	["「祝你在這裡度過愉快的時光，客人。下次門鈴為你響起時，我就要說：歡迎回來啦。」", "“Enjoy your stay, dear guest. Next time the bell rings for you, I’ll say: welcome back.”"],
+	["末班車之後，喫茶店才亮起燈", "The Café That Opens After the Last Train"],
+	["原創日常奇幻短篇：錯過的末班車、橙髮少女，以及一間替你留著座位的小小喫茶店。", "An original slice-of-life fantasy: a missed train, an orange-haired girl, and a little café that keeps one seat for you."],
+	["短篇故事", "Short Story"],
+	["日常魔法", "Everyday Magic"],
+	["喫茶店物語", "Café Stories"],
+	["末班車在晚上十一點四十七分離站。你在十一點四十八分抵達月台。", "The last train left at 11:47 p.m. You reached the platform at 11:48."],
+	["你在售票機旁站了一會兒，看著螢幕上的小箭頭，一閃一閃地指向已經不存在的列車。然後，你收起手機，選了比較遠的那條路回家。", "For a while, you stood beside the ticket machine, watching the little arrow on its screen blink toward a train that no longer existed. Then you put your phone away and took the long way home."],
+	["巷子盡頭的一盞燈", "A light at the end of the lane"],
+	["這條巷子，你走過不下一百次。可今晚，拉下鐵門的花店與自助洗衣店之間，多了一扇從未見過的門。暖光從門縫裡漫出來，窗邊掛著一塊小牌子：Salanの喫茶店。", "You had passed this lane a hundred times. Tonight, between the shuttered florist and the laundromat, there was a door you had never seen. Warm light spilled beneath it. A small sign in the window read: Salan’s Café."],
+	["你的手還沒碰到門把，門鈴就先響了。", "The bell chimed before you touched the handle."],
+	["「來得正好。」橙髮少女從吧檯後抬起頭，一邊馬尾的緞帶有些鬆了。「第一塊鬆餅總是煎得有點歪。你願意收下它嗎？」", "“Just in time.” An orange-haired girl looked up from the counter. A ribbon had slipped loose from one of her pigtails. “The first pancake always comes out a little crooked. Would you mind taking it?”"],
+	["你看了一眼空蕩蕩的桌椅。「還在營業嗎？」", "You glanced at the empty tables. “Are you still open?”"],
+	["「水壺還在呀。」她指了指窗邊的座位，彷彿這樣就已經回答了所有問題。", "“The kettle is.” She pointed you toward a seat by the window, as though that settled everything."],
+	["一個很小的魔法", "A very small spell"],
+	["她放下茶杯時，杯碟底下亮起一圈細細的金光，小星星沿著邊緣緩緩移動。你端起茶杯，光圈跟著升到半空，晃了一下，又掉回桌面。", "When she set down your cup, a thin gold circle lit up beneath the saucer. Tiny stars travelled around its rim. You lifted the cup. The circle followed it halfway into the air, wobbled, and dropped back onto the table."],
+	["「保溫用的。」她伸出一根手指，按住那顆試圖溜走的星星。「大部分時候都管用。」", "“It keeps the tea warm,” she explained, pressing one finger against a wandering star. “Usually.”"],
+	["你問她，有沒有能讓末班車開回來的魔法。", "You asked whether she knew a spell that could bring back the last train."],
+	["她很認真地想了想，然後搖頭。「熱茶、乾襪子，還有稍微好吃一點的鬆餅，這些我會。鐵路的事情就沒辦法了。」", "She considered this seriously. Then she shook her head. “I can do warm tea, dry socks, and slightly better pancakes. The railway is beyond me.”"],
+	["鬆餅確實是歪的。蜂蜜全積在一邊，她便悄悄轉了轉盤子，讓那點金色慢慢流向你。窗外，雨點輕敲玻璃。你鬆開了口袋裡握著手機的手，沒有把它拿出來。", "The pancake was crooked. The honey had collected on one side, so she quietly turned the plate until it began to flow toward you. Outside, rain tapped the glass. You loosened your grip on the phone in your pocket and left it there."],
+	["留給下次的座位", "A seat for next time"],
+	["杯子見底時，雨也停了。你問她多少錢。她從點餐本上撕下一小張紙，寫道：下次來，告訴我第二塊鬆餅有沒有比較好吃。", "By the time your cup was empty, the rain had stopped. You asked for the bill. She tore a square from her order pad and wrote: Tell me whether the second pancake is better, next time."],
+	["「這不是價錢吧。」你說。", "“That’s not a price,” you said."],
+	["「那就下次再來投訴我。」她把紙條塞進你手裡。字跡旁邊有一顆蜂蜜色的小星星，還在動。", "“Then you’ll have to come back and complain.” She tucked the note into your hand. There was a tiny honey-coloured star beside the writing. It was still moving."],
+	["巷子裡有濕石板與麵包的氣味。手機替你列出三條回家的路。這一次，你選了會經過河邊的那條。", "Outside, the lane smelled of wet stone and bread. Your phone offered three routes home. For once, you chose the one that went past the river."],
+	["回頭時，少女正在重新繫好緞帶。窗邊的桌子已經收拾乾淨，上方那盞燈，還亮著。", "When you looked back, the girl was tying her ribbon again. One table had been cleared. The lamp above it was still on."],
+	["Salanの喫茶店原創短篇。如果你今晚也找到了這扇門，窗邊的位置就留給你。", "An original short story from Salan’s Café. If you found the door tonight, the window seat is yours."],
+	["文章列表", "Post List"],
+	["上一页", "Previous page"],
+	["下一页", "Next page"],
+	["喫茶店資訊", "Café Details"],
+	["站點統計與文章日曆", "Site statistics and post calendar"],
+	["Salanの喫茶店", "Salan's Café"],
+	["記錄生活、技術與一路上的靈感", "Notes on life, technology, and inspiration along the way"],
+	["把日常寫成故事，把好奇變成作品", "Turning everyday moments into stories and curiosity into creations"],
+	["把日常寫成故事，把好奇變成作品。", "Turning everyday moments into stories and curiosity into creations."],
+	["在技術與生活之間，收藏值得記住的片刻", "Collecting moments worth remembering between technology and life"],
+	["慢慢探索，認真記錄，自由生長", "Explore slowly, record thoughtfully, and grow freely"],
+	["每一次分享，都是與世界重新相遇", "Every shared thought is a new encounter with the world"],
+	["願文字留下溫度，也帶來新的可能", "May these words preserve warmth and open new possibilities"],
+	["我的", "My Space"],
+	["番劇", "Anime"],
+	["日記", "Diary"],
+	["相簿", "Albums"],
+	["我的裝置", "My Devices"],
+	["關於", "About"],
+	["鏈接", "Links"],
+	["歡迎來到 Salanの喫茶店，願你在這裡找到一點靈感與共鳴。", "Welcome to Salan's Café. I hope you find a little inspiration and connection here."],
+	["認識我", "About Me"],
+	["歡迎來到 Salanの喫茶店", "Welcome to Salan's Café"],
+	["一個關於生活、技術與靈感的全新開始。", "A fresh start centered on life, technology, and inspiration."],
+	["生活", "Life"],
+	["技術", "Technology"],
+	["隨筆", "Notes"],
+	["小屋日誌", "Cottage Journal"],
+	["你好，歡迎來到這裡。", "Hello, and welcome."],
+	["我一直相信，記錄不只是保存過去，也是理解自己的方式。那些剛學會的知識、偶然出現的靈感，以及平凡日子裡微小卻真實的感受，都值得被好好放在一個地方。", "I have always believed that keeping a record is not only about preserving the past, but also about understanding ourselves. Newly learned ideas, unexpected inspiration, and the small but genuine feelings found in ordinary days all deserve a place of their own."],
+	["於是有了這間喫茶店。", "That is why this café exists."],
+	["我想在這裡留下什麼", "What I Want to Leave Here"],
+	["這裡會有技術學習的筆記，也會有生活與創作的片段。我會分享問題是如何被拆解的、工具是如何被使用的，以及一個想法從模糊到逐漸成形的過程。", "Here you will find notes on learning technology, along with fragments of life and creative work. I will share how problems are broken down, how tools are used, and how an idea gradually takes shape."],
+	["內容不一定宏大，但會盡量真誠；更新不一定頻繁，但希望每一次出現都有意義。", "The subjects may not always be grand, but I will keep them sincere. Updates may not be frequent, but I hope each one is meaningful."],
+	["一個新的開始", "A New Beginning"],
+	["網站現在還很年輕，許多內容也正在慢慢長出來。未來，我希望它不只是一份個人檔案，更是一張持續展開的地圖——記錄我看過的風景、學到的方法，以及仍然想去理解的世界。", "This site is still young, and much of it is only beginning to grow. In time, I hope it becomes more than a personal archive: an unfolding map of the places I have seen, the things I have learned, and the world I still want to understand."],
+	["如果這裡的某段文字恰好對你有幫助，或讓你產生了一點共鳴，那就是很好的相遇。", "If something here helps you or resonates with you, then this has already been a wonderful encounter."],
+	["謝謝你的到來。故事，從這一頁開始。", "Thank you for being here. The story begins on this page."],
+	["關於我", "About Me"],
+	["一間藏在網路角落的小小喫茶店。", "A little café tucked into a corner of the internet."],
+	["收留零散的文字、偶爾冒出的小故事，還有一些不想匆匆翻過的日常。", "A home for scattered notes, small stories, and everyday moments worth lingering over."],
+	["這裡沒有固定的菜單，也不著急。挑個舒服的位置，隨意翻翻，或聽首歌。", "There is no fixed menu here, and no rush. Pick a comfortable seat, turn a few pages, or put on a song."],
+	["謝謝你推門進來。下次路過，也歡迎再坐坐。", "Thank you for stepping inside. Come sit with us again whenever you pass by."],
+	["小紅書", "Xiaohongshu"],
+	["專業影像旗艦，配備蔡司雲台級主攝、OriginOS 6 與 90W 超快閃充。", "A professional imaging flagship with a ZEISS gimbal-grade main camera, OriginOS 6, and 90W fast charging."],
+	["11.5 吋 2.8K 144Hz 原色螢幕，搭載 Snapdragon 870 與 8500mAh 電池。", "An 11.5-inch 2.8K 144Hz true-color display, powered by Snapdragon 870 with an 8500mAh battery."],
+	["55dB 降噪 / 45 小時續航", "55dB noise cancellation / 45-hour battery life"],
+	["搭載第三代 Qualcomm S3 音訊平台，支援 LDAC、aptX Lossless 與藍牙 5.4。", "Powered by the third-generation Qualcomm S3 audio platform, with LDAC, aptX Lossless, and Bluetooth 5.4 support."],
+	["13 吋 / 16GB + 512GB / 午夜色", "13-inch / 16GB + 512GB / Midnight"],
+	["搭載 Apple M4 晶片與 13.6 吋 Liquid Retina 顯示器，電池續航最長可達 18 小時。", "Featuring the Apple M4 chip and a 13.6-inch Liquid Retina display, with up to 18 hours of battery life."],
+);
+translationPairs.push(...getAnimeTranslationPairs());
+---
+
+<button
+	id="language-switch"
+	type="button"
+	class="btn-plain scale-animation rounded-lg h-11 w-11 px-0 active:scale-90 flex items-center justify-center gap-0"
+	aria-label="Switch to English"
+	title="Switch to English"
+>
+	<Icon name="material-symbols:language" class="text-[1.25rem]" />
+	<span id="language-switch-label" class="text-xs font-bold leading-none">EN</span>
+</button>
+
+<script is:inline define:vars={{ translationPairs }}>
+	const STORAGE_KEY = "mizuki-language";
+	const zhToEn = new Map(translationPairs);
+	const enToZh = new Map(translationPairs.map(([traditionalChinese, english]) => [english, traditionalChinese]));
+	const ignoredElements = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "CODE", "PRE", "TEXTAREA"]);
+	let currentLanguage = localStorage.getItem(STORAGE_KEY) === "zh_TW" ? "zh_TW" : "en";
+	let isApplyingLanguage = false;
+
+	function translateValue(value, targetLanguage) {
+		const trimmed = value.trim();
+		if (!trimmed) return value;
+		const dictionary = targetLanguage === "en" ? zhToEn : enToZh;
+		const translated = dictionary.get(trimmed);
+		if (translated) return value.replace(trimmed, translated);
+
+		// Translate complete labels inside known UI formats, never arbitrary substrings.
+		if (trimmed.startsWith("#")) {
+			return value.replace(/(#\s*)([^#]+?)(?=\s*#|$)/g,
+				(_, prefix, label) => prefix + translateValue(label, targetLanguage));
+		}
+		const count = trimmed.match(/^(\d[\d,.]*)(\s*)(字|words?|篇文章|posts?|分鐘|minutes?|天|days?)$/);
+		if (count) {
+			const [, amount, gap, unit] = count;
+			const englishUnit = /^(字|words?)$/.test(unit) ? "word" : /^(篇文章|posts?)$/.test(unit) ? "post" : /^(分鐘|minutes?)$/.test(unit) ? "minute" : "day";
+			const nextUnit = targetLanguage === "en"
+				? englishUnit + (Number(amount.replaceAll(",", "")) === 1 ? "" : "s")
+				: { word: "字", post: "篇文章", minute: "分鐘", day: "天" }[englishUnit];
+			return value.replace(trimmed, amount + (gap || " ") + nextUnit);
+		}
+		const calendar = trimmed.match(/^(\d{4})年\s*(\d{1,2})月$/);
+		if (targetLanguage === "en" && calendar) return value.replace(trimmed, `${calendar[1]} / ${calendar[2]}`);
+		const englishCalendar = trimmed.match(/^(\d{4}) \/ (\d{1,2})$/);
+		if (targetLanguage !== "en" && englishCalendar) return value.replace(trimmed, `${englishCalendar[1]}年 ${englishCalendar[2]}月`);
+		const label = trimmed.match(/^(View all posts (?:in the |with the |tagged with ))(.+?)( category| tag)?$/);
+		if (label) return value.replace(trimmed, label[1] + translateValue(label[2], targetLanguage) + (label[3] || ""));
+		// Browser titles combine a page name and the site name in one text node.
+		if (trimmed.includes(" - ")) return value.split(" - ").map(part => dictionary.get(part.trim()) ? translateValue(part, targetLanguage) : part).join(" - ");
+		return value;
+	}
+
+	// 讓會自行更新文字的元件（例如打字機）能在動畫開始前取得正確語言。
+	window.mizukiTranslateValue = translateValue;
+	window.mizukiGetLanguage = () => currentLanguage;
+
+	function translateNode(root, targetLanguage) {
+		if (root.nodeType === Node.TEXT_NODE) {
+			const parent = root.parentElement;
+			if (!parent || ignoredElements.has(parent.tagName) || parent.closest("[data-no-translate]")) return;
+			const translated = translateValue(root.nodeValue || "", targetLanguage);
+			if (root.nodeValue !== translated) root.nodeValue = translated;
+			return;
+		}
+
+		if (!(root instanceof Element) && root !== document.body) return;
+		if (root instanceof Element && (ignoredElements.has(root.tagName) || root.closest("[data-no-translate]"))) return;
+
+		const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+		let textNode;
+		while ((textNode = walker.nextNode())) {
+			const parent = textNode.parentElement;
+			if (!parent || ignoredElements.has(parent.tagName) || parent.closest("[data-no-translate]")) continue;
+			const translated = translateValue(textNode.nodeValue || "", targetLanguage);
+			if (textNode.nodeValue !== translated) textNode.nodeValue = translated;
+		}
+
+		const elements = root instanceof Element ? [root, ...root.querySelectorAll("*")] : root.querySelectorAll("*");
+		for (const element of elements) {
+			if (ignoredElements.has(element.tagName) || element.closest("[data-no-translate]")) continue;
+			for (const attribute of ["aria-label", "title", "placeholder", "alt"]) {
+				if (element.hasAttribute(attribute)) {
+					const original = element.getAttribute(attribute) || "";
+					const translated = translateValue(original, targetLanguage);
+					if (original !== translated) element.setAttribute(attribute, translated);
+				}
+			}
+		}
+	}
+
+	function updateSwitch() {
+		const button = document.getElementById("language-switch");
+		const label = document.getElementById("language-switch-label");
+		if (!button || !label) return;
+		const isEnglish = currentLanguage === "en";
+		const nextLabel = isEnglish ? "繁中" : "EN";
+		if (label.textContent !== nextLabel) label.textContent = nextLabel;
+		const action = isEnglish ? "切換至繁體中文" : "Switch to English";
+		for (const attribute of ["aria-label", "title", "alt"]) {
+			if (button.getAttribute(attribute) !== action) button.setAttribute(attribute, action);
+		}
+	}
+
+	function applyLanguage(language) {
+		currentLanguage = language;
+		isApplyingLanguage = true;
+		document.documentElement.lang = language === "en" ? "en" : "zh-TW";
+		translateNode(document.body, language);
+		document.title = translateValue(document.title, language);
+		updateSwitch();
+		isApplyingLanguage = false;
+		document.dispatchEvent(
+			new CustomEvent("mizuki:language-changed", { detail: { language } }),
+		);
+	}
+
+	function bindSwitch() {
+		const button = document.getElementById("language-switch");
+		if (!button || button.dataset.languageSwitchBound === "true") return;
+		button.dataset.languageSwitchBound = "true";
+		button.addEventListener("click", () => {
+			const nextLanguage = currentLanguage === "en" ? "zh_TW" : "en";
+			localStorage.setItem(STORAGE_KEY, nextLanguage);
+			applyLanguage(nextLanguage);
+		});
+	}
+
+	const languageObserver = new MutationObserver((mutations) => {
+		if (isApplyingLanguage) return;
+		isApplyingLanguage = true;
+		for (const mutation of mutations) {
+			if (mutation.type === "characterData" || mutation.type === "attributes") translateNode(mutation.target, currentLanguage);
+			for (const node of mutation.addedNodes) translateNode(node, currentLanguage);
+		}
+		updateSwitch();
+		isApplyingLanguage = false;
+	});
+
+	function initializeLanguageSwitch() {
+		bindSwitch();
+		applyLanguage(currentLanguage);
+		if (document.body && !document.body.dataset.languageObserverActive) {
+			document.body.dataset.languageObserverActive = "true";
+			languageObserver.observe(document.documentElement, {
+				childList: true, subtree: true, characterData: true,
+				attributes: true, attributeFilter: ["aria-label", "title", "placeholder", "alt"],
+			});
+		}
+	}
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", initializeLanguageSwitch, { once: true });
+	} else {
+		initializeLanguageSwitch();
+	}
+	document.addEventListener("swup:contentReplaced", () => applyLanguage(currentLanguage));
+</script>
